@@ -25,3 +25,10 @@ gemini mcp add db-server uv -- run --project "C:\OSI\dbmcp" --with fastmcp fastm
 gemini mcp list
 gemini --prompt-interactive "Hello"
 ```
+
+## .env File
+Create `.env` file in the project root:
+```
+GEMINI_API_KEY=
+```
+
