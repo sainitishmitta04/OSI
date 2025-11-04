@@ -1,4 +1,3 @@
-
 # mcptest - API MCP Server
 
 ## Quick Setup
@@ -26,4 +25,10 @@ gemini mcp add weather-server uv -- run --project "C:\OSI\mcptest" --with fastmc
 gemini mcp list
 gemini --prompt-interactive "Hello"
 ```
----
+
+## .env File
+Create `.env` file in the project root:
+```
+GEMINI_API_KEY=
+ACCUWEATHER_API_KEY=
+```
