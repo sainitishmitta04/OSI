@@ -25,4 +25,11 @@ gemini mcp add demo-server uv -- run --project "C:\OSI\fastmcp-demo" --with fast
 gemini mcp list
 gemini --prompt-interactive "Hello"
 ```
----
+
+## .env File
+Create `.env` file in the project root:
+```
+GEMINI_API_KEY=
+```
+
+
