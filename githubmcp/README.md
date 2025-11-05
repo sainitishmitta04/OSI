@@ -9,10 +9,9 @@ GITHUB_TOKEN=<github_token>
 ## Installation Instructions
 ```
 uv venv
-.\.venv\Scripts\Activate.ps1        
-pip install PyGithub python-dotenv 
+.\.venv\Scripts\Activate.ps1         
 python -m ensurepip --upgrade    
-c:\Users\Administrator\Documents\MCP-tutorial\.venv\Scripts\python.exe -m pip install PyGithub python-dotenv
+c:\Users\Administrator\Documents\MCP-tutorial\.venv\Scripts\python.exe -m pip install fastmcp PyGithub python-dotenv
 pip show PyGithub      
 python main.py    
 ```
