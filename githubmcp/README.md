@@ -15,3 +15,13 @@ c:\Users\Administrator\Documents\MCP-tutorial\.venv\Scripts\python.exe -m pip in
 pip show PyGithub      
 python main.py    
 ```
+claude_desktop_config.json
+```
+"github-mcp": {
+    "command": "C:\\Users\\Administrator\\Documents\\MCP-tutorial\\.venv\\Scripts\\python.exe",
+    "args": [
+    "C:\\Users\\Administrator\\Documents\\MCP-tutorial\\main.py"
+    ]
+  }
+
+```
