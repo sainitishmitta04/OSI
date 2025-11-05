@@ -17,11 +17,15 @@ python main.py
 ```
 claude_desktop_config.json
 ```
-"github-mcp": {
+{
+  "mcpServers": {
+    "github-mcp": {
     "command": "C:\\Users\\Administrator\\Documents\\MCP-tutorial\\.venv\\Scripts\\python.exe",
     "args": [
     "C:\\Users\\Administrator\\Documents\\MCP-tutorial\\main.py"
     ]
   }
+  }
+}
 
 ```
