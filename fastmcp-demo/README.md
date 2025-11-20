@@ -27,6 +27,11 @@ fastmcp install claude-desktop main.py --project "$PWD"
 # Verify and test
 gemini mcp list
 gemini --prompt-interactive "Hello"
+
+
+#Remvoe server from gemini
+gemini mcp remove demo-server
+
 ```
 
 ## .env File
@@ -34,6 +39,7 @@ Create `.env` file in the project root:
 ```
 GEMINI_API_KEY=
 ```
+
 
 
 
