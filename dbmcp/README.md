@@ -19,7 +19,7 @@ python main.py
 
 # Register with Gemini CLI
 fastmcp install mcp-json main.py --project "$PWD"
-gemini mcp add demo-server uv -- run --project "$PWD" --with fastmcp fastmcp run main.py
+gemini mcp add dbmcp-server uv -- run --project "$PWD" --with fastmcp fastmcp run main.py
 
 # Register with claude desktop
 fastmcp install claude-desktop main.py --project "$PWD"
@@ -34,5 +34,6 @@ Create `.env` file in the project root:
 ```
 GEMINI_API_KEY=
 ```
+
 
 
