@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import os
 
 # Initialize MCP app
-mcp = FastMCP("github-mcp1")
+mcp = FastMCP("github-mcp")
 
 # Load GitHub token
 load_dotenv() 
