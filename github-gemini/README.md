@@ -21,7 +21,7 @@ python main.py
 gemini mcp add "." python main.py
 
 # Verify and test
-start gemini
+gemini
 
 # verify the tools 
 gemini mcp list
@@ -34,6 +34,7 @@ Create `.env` file in the project root:
 GITHUB_TOKEN=
 GEMINI_API_KEY=
 ```
+
 
 
 
