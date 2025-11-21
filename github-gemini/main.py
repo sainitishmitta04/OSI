@@ -1,43 +1,45 @@
 # main.py
-import os, ssl, certifi
-
-cafile = certifi.where()
-
-os.environ["SSL_CERT_FILE"] = cafile
-os.environ["REQUESTS_CA_BUNDLE"] = cafile
-
-# Force Python's SSL module to use the certifi CA bundle
-ssl_context = ssl.create_default_context(cafile=cafile)
-ssl._create_default_https_context = lambda *args, **kwargs: ssl_context
-
+import os
+import ssl
+import certifi
 
 from mcp.server.fastmcp import FastMCP
 from github import Github, Auth
 from dotenv import load_dotenv
-import os
 
-# Initialize MCP app
-mcp = FastMCP("github-mcp")
+# ---------------------------------------------------------------------
+# SSL FIX (Required for Windows & corporate networks)
+# ---------------------------------------------------------------------
+cafile = certifi.where()
+os.environ["SSL_CERT_FILE"] = cafile
+os.environ["REQUESTS_CA_BUNDLE"] = cafile
 
-# Load GitHub token
-load_dotenv() 
+ssl_context = ssl.create_default_context(cafile=cafile)
+ssl._create_default_https_context = lambda *args, **kwargs: ssl_context
+
+# ---------------------------------------------------------------------
+# Initialize MCP Server
+# ---------------------------------------------------------------------
+mcp = FastMCP("github-mcp-server")
+
+# Load GitHub Token
+load_dotenv()
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
+
 if not GITHUB_TOKEN:
-    raise RuntimeError("Missing GITHUB_TOKEN environment variable")
+    raise RuntimeError("Missing GITHUB_TOKEN in your .env file")
 
 auth = Auth.Token(GITHUB_TOKEN)
 gh = Github(auth=auth)
+
+# ---------------------------------------------------------------------
+# GitHub MCP Tools
+# ---------------------------------------------------------------------
 
 @mcp.tool()
 def create_repository(repo_name: str, private: bool = False, description: str = "") -> str:
     """
     Create a new GitHub repository under the authenticated user's account.
-    Args:
-        repo_name: str -> The name of the new repository
-        private: bool -> Whether the repository should be private
-        description: str -> Optional description of the repository
-    Returns:
-        str -> Confirmation message with repository URL
     """
     user = gh.get_user()
     repo = user.create_repo(
@@ -50,47 +52,54 @@ def create_repository(repo_name: str, private: bool = False, description: str = 
 
 
 @mcp.tool()
-def create_branch(repo_name: str, base_branch: str, new_branch: str):
-    """Create a new branch in the specified GitHub repository."""
+def create_branch(repo_name: str, base_branch: str, new_branch: str) -> str:
+    """
+    Create a new branch from an existing base branch.
+    """
     repo = gh.get_repo(repo_name)
     base = repo.get_branch(base_branch)
+
     repo.create_git_ref(ref=f"refs/heads/{new_branch}", sha=base.commit.sha)
     return f"Branch '{new_branch}' created from '{base_branch}'."
 
 
 @mcp.tool()
-def create_file(repo_name: str, branch: str, file_path: str, content: str, commit_message: str):
-    """Create or update a file in the given GitHub repository."""
+def create_file(repo_name: str, branch: str, file_path: str, content: str, commit_message: str) -> str:
+    """
+    Create or update a file inside a GitHub repository.
+    """
     repo = gh.get_repo(repo_name)
+
     try:
         existing = repo.get_contents(file_path, ref=branch)
         repo.update_file(existing.path, commit_message, content, existing.sha, branch=branch)
-        msg = f"Updated file '{file_path}' on branch '{branch}'."
+        return f"Updated file '{file_path}' on branch '{branch}'."
     except Exception:
         repo.create_file(file_path, commit_message, content, branch=branch)
-        msg = f"Created new file '{file_path}' on branch '{branch}'."
-    return msg
+        return f"Created new file '{file_path}' on branch '{branch}'."
 
 
 @mcp.tool()
-def create_pull_request(repo_name: str, base: str, head: str, title: str, body: str = ""):
-    """Create a pull request in the specified GitHub repository."""
+def create_pull_request(repo_name: str, base: str, head: str, title: str, body: str = "") -> str:
+    """
+    Create a pull request.
+    """
     repo = gh.get_repo(repo_name)
     pr = repo.create_pull(title=title, body=body, base=base, head=head)
     return f"Pull request created: {pr.html_url}"
 
+
 @mcp.tool()
 def summarize_repository(repo_name: str) -> str:
     """
-    Summarize a GitHub repository.
-    Args:
-        repo_name: str -> Example: "delegate-org/awesome-project"
-    Returns:
-        str summary
+    Summarize a GitHub repository:
+    - Basic info
+    - Languages
+    - Approx file count
+    - Recent commit messages
     """
     repo = gh.get_repo(repo_name)
 
-    # Basic info
     name = repo.full_name
     description = repo.description or "No description"
     stars = repo.stargazers_count
@@ -105,24 +114,24 @@ def summarize_repository(repo_name: str) -> str:
     else:
         lang_summary = "No languages detected"
 
-    # File count (limited for performance)
+    # Approx file count (limited to avoid API throttling)
     contents = repo.get_contents("")
     file_count = 0
     while contents:
-        file = contents.pop(0)
-        if file.type == "dir":
-            contents.extend(repo.get_contents(file.path))
+        item = contents.pop(0)
+        if item.type == "dir":
+            contents.extend(repo.get_contents(item.path))
         else:
             file_count += 1
             if file_count >= 200:
-                break  # stop early to avoid hitting API limits
+                break
 
     # Recent commits
     commits = repo.get_commits()
-    commit_messages = [c.commit.message.split("\n")[0] for c in commits[:3]]
-    commit_summary = "; ".join(commit_messages) if commit_messages else "No commits found"
+    commit_msgs = [c.commit.message.split("\n")[0] for c in commits[:3]]
+    commit_summary = "; ".join(commit_msgs) if commit_msgs else "No commits found"
 
-    summary = (
+    return (
         f"Repository: {name}\n"
         f"Description: {description}\n"
         f"Stars: {stars}, Forks: {forks}, Open Issues: {open_issues}\n"
@@ -131,16 +140,11 @@ def summarize_repository(repo_name: str) -> str:
         f"Recent Commits: {commit_summary}"
     )
 
-    return summary
 
 @mcp.tool()
 def delete_repository(repo_name: str) -> str:
     """
     Delete a GitHub repository owned by the authenticated user.
-    Args:
-        repo_name: str -> Example: "username/repository-name"
-    Returns:
-        str -> Confirmation message
     """
     try:
         repo = gh.get_repo(repo_name)
@@ -150,5 +154,8 @@ def delete_repository(repo_name: str) -> str:
         return f"Failed to delete repository '{repo_name}': {e}"
 
 
+# ---------------------------------------------------------------------
+# MCP Run
+# ---------------------------------------------------------------------
 if __name__ == "__main__":
     mcp.run()
