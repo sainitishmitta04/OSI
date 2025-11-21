@@ -1,0 +1,13 @@
+[project]
+name = "sree-github"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "certifi>=2025.11.12",
+    "fastmcp==2.11.3",
+    "mcp==1.13.1",
+    "pygithub>=2.8.1",
+    "python-dotenv>=1.2.1",
+]
