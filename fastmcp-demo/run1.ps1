@@ -1,6 +1,3 @@
-mkdir OSI
-cd OSI
-
 mkdir fastmcp-demo
 cd fastmcp-demo
 
