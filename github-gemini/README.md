@@ -8,7 +8,7 @@ uv init .
 uv venv
 .venv\Scripts\activate
 
-uv add fastmcp==2.11.3 mcp==1.13.1
+uv add fastmcp==2.11.3 mcp==1.13.1 certifi PyGithub python-dotenv
 fastmcp version
 
 # Test server
@@ -34,6 +34,7 @@ Create `.env` file in the project root:
 GITHUB_TOKEN=
 GEMINI_API_KEY=
 ```
+
 
 
 
